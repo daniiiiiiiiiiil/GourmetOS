@@ -1,0 +1,20 @@
+app:
+  name: GourmetOS
+  version: 1.0.0
+
+server:
+  port: 8080
+  read_timeout: 15s
+  write_timeout: 15s
+  idle_timeout: 60s
+
+database:
+  url: postgresql://postgres:dani123l@localhost:5432/gourmetos?sslmode=disable
+  max_conns: 25
+  min_conns: 5
+  max_lifetime: 1h
+  max_idle_time: 30m
+
+logger:
+  level: info
+  format: json

@@ -1,0 +1,13 @@
+DROP INDEX IF EXISTS idx_employees_role;
+DROP INDEX IF EXISTS idx_tables_is_occupied;
+DROP INDEX IF EXISTS idx_customers_phone;
+DROP INDEX IF EXISTS idx_dishes_category;
+DROP INDEX IF EXISTS idx_dishes_cuisine;
+DROP INDEX IF EXISTS idx_orders_status;
+DROP INDEX IF EXISTS idx_orders_created_at;
+DROP INDEX IF EXISTS idx_orders_table_id;
+DROP INDEX IF EXISTS idx_orders_customer_id;
+DROP INDEX IF EXISTS idx_orders_waiter_id;
+DROP INDEX IF EXISTS idx_payments_order_id;
+DROP INDEX IF EXISTS idx_order_items_order_id;
+DROP INDEX IF EXISTS idx_order_items_dish_id;
