@@ -131,7 +131,8 @@ func (t *TableRepository) GetOccupiedTable(ctx context.Context, conn *pgx.Conn, 
 	sqlQuery := `
 	SELECT * 
 	FROM tables
-	WHERE is_occupied = TRUE`
+	WHERE is_occupied = TRUE
+	LIMIT $1 OFFSET $2`
 	rows, err := conn.Query(ctx, sqlQuery, limit, offset)
 	if err != nil {
 		return nil, err

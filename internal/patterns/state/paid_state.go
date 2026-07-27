@@ -42,7 +42,7 @@ func (s *PaidState) Cancel(order *Order) error {
 
 // возвращает название состояния
 func (s *PaidState) GetName() string {
-	return "Оплачен"
+	return "paid"
 }
 
 // проверяет, можно ли перейти в другое состояние

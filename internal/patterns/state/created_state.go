@@ -44,7 +44,7 @@ func (s *CreatedState) Cancel(order *Order) error {
 
 // возвращает название состояния
 func (s *CreatedState) GetName() string {
-	return "Создан"
+	return "created"
 }
 
 // проверяет, можно ли перейти в другое состояние

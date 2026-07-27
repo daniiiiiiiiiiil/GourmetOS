@@ -143,12 +143,21 @@ func (h *OrderHandler) AddDish(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
+
+	vars := mux.Vars(r)
+	orderID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		sendError(w, http.StatusBadRequest, "InvalidID", "Неверный ID заказа")
+		return
+	}
+
 	var req dto.AddDishRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		sendError(w, http.StatusBadRequest, "InvalidRequest", err.Error())
 		return
 	}
-	err := h.service.AddDishService(r.Context(), conn, req.OrderID, req.DishID, req.Quantity)
+
+	err = h.service.AddDishService(r.Context(), conn, orderID, req.DishID, req.Quantity)
 	if err != nil {
 		sendError(w, http.StatusInternalServerError, "AddDishServiceError", err.Error())
 		return

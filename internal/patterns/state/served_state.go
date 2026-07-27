@@ -43,7 +43,7 @@ func (s *ServedState) Cancel(order *Order) error {
 
 // возвращает название состояния
 func (s *ServedState) GetName() string {
-	return "Подан"
+	return "served"
 }
 
 // проверяет, можно ли перейти в другое состояние

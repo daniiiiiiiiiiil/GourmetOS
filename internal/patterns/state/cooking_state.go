@@ -43,7 +43,7 @@ func (s *CookingState) Cancel(order *Order) error {
 
 // возвращает название состояния
 func (s *CookingState) GetName() string {
-	return "Готовится"
+	return "cooking"
 }
 
 // проверяет, можно ли перейти в другое состояние

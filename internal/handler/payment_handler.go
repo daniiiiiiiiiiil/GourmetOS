@@ -60,7 +60,7 @@ func (h *PaymentHandler) GetPaymentStatus(w http.ResponseWriter, r *http.Request
 		return
 	}
 	vars := mux.Vars(r)
-	paymentID, err := strconv.Atoi(vars["payment_id"])
+	paymentID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		sendError(w, http.StatusNotFound, "InvalidPaymentID", err.Error())
 	}
@@ -78,7 +78,7 @@ func (h *PaymentHandler) RefundPayment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vars := mux.Vars(r)
-	paymentID, err := strconv.Atoi(vars["payment_id"])
+	paymentID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		sendError(w, http.StatusNotFound, "InvalidPaymentID", err.Error())
 		return
@@ -96,7 +96,7 @@ func (h *PaymentHandler) GetPaymentByOrder(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	vars := mux.Vars(r)
-	orderID, err := strconv.Atoi(vars["order_id"])
+	orderID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		sendError(w, http.StatusNotFound, "InvalidOrderID", err.Error())
 		return
@@ -115,7 +115,7 @@ func (h *PaymentHandler) GetPaymentByTransaction(w http.ResponseWriter, r *http.
 		return
 	}
 	vars := mux.Vars(r)
-	transactionID := vars["transaction_id"]
+	transactionID := vars["id"]
 
 	pay, err := h.service.GetPaymentByTransaction(r.Context(), conn, transactionID)
 	if err != nil {
@@ -132,7 +132,7 @@ func (h *PaymentHandler) GetPaymentMethods(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	vars := mux.Vars(r)
-	orderID, err := strconv.Atoi(vars["order_id"])
+	orderID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		sendError(w, http.StatusNotFound, "InvalidOrderID", err.Error())
 		return
@@ -151,21 +151,36 @@ func (h *PaymentHandler) ApplyDiscount(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	vars := mux.Vars(r)
-	orderID, err := strconv.Atoi(vars["order_id"])
-
-	discountType := vars["discount_type"]
-
-	if err != nil {
-		sendError(w, http.StatusNotFound, "InvalidOrderID", err.Error())
+	var req struct {
+		OrderID      int    `json:"order_id"`
+		DiscountType string `json:"discount_type"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		sendError(w, http.StatusBadRequest, "InvalidRequest", "Неверный формат запроса")
 		return
 	}
-	pay, err := h.service.ApplyDiscount(r.Context(), conn, orderID, discountType)
+
+	if req.OrderID <= 0 {
+		sendError(w, http.StatusBadRequest, "InvalidOrderID", "ID заказа не может быть меньше или равен 0")
+		return
+	}
+
+	if req.DiscountType == "" {
+		sendError(w, http.StatusBadRequest, "InvalidDiscountType", "Тип скидки не может быть пустым")
+		return
+	}
+
+	result, err := h.service.ApplyDiscount(r.Context(), conn, req.OrderID, req.DiscountType)
 	if err != nil {
 		sendError(w, http.StatusInternalServerError, "ErrorServer", err.Error())
 		return
 	}
-	sendSuccess(w, http.StatusOK, pay)
+
+	sendSuccess(w, http.StatusOK, map[string]interface{}{
+		"order_id":      req.OrderID,
+		"discount_type": req.DiscountType,
+		"final_amount":  result,
+	})
 }
 
 func (h *PaymentHandler) CalculateFinalAmount(w http.ResponseWriter, r *http.Request) {
@@ -173,16 +188,33 @@ func (h *PaymentHandler) CalculateFinalAmount(w http.ResponseWriter, r *http.Req
 	if !ok {
 		return
 	}
-	vars := mux.Vars(r)
-	orderID, err := strconv.Atoi(vars["order_id"])
-	discountType := vars["discount_type"]
-	if err != nil {
-		sendError(w, http.StatusNotFound, "InvalidOrderID", err.Error())
+	var req struct {
+		OrderID      int    `json:"order_id"`
+		DiscountType string `json:"discount_type"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		sendError(w, http.StatusBadRequest, "InvalidRequest", "Неверный формат запроса")
 		return
 	}
-	pay, err := h.service.CalculateFinalAmount(r.Context(), conn, orderID, discountType)
+
+	if req.OrderID <= 0 {
+		sendError(w, http.StatusBadRequest, "InvalidOrderID", "ID заказа не может быть меньше или равен 0")
+		return
+	}
+
+	if req.DiscountType == "" {
+		req.DiscountType = "no_discount"
+	}
+
+	finalAmount, err := h.service.CalculateFinalAmount(r.Context(), conn, req.OrderID, req.DiscountType)
 	if err != nil {
 		sendError(w, http.StatusInternalServerError, "ErrorServer", err.Error())
+		return
 	}
-	sendSuccess(w, http.StatusOK, pay)
+
+	sendSuccess(w, http.StatusOK, map[string]interface{}{
+		"order_id":      req.OrderID,
+		"discount_type": req.DiscountType,
+		"final_amount":  finalAmount,
+	})
 }

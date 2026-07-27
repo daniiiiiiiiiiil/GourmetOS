@@ -4,6 +4,7 @@ import (
 	"GourmetOS/internal/domain"
 	"GourmetOS/pkg/errors"
 	"GourmetOS/pkg/pagination"
+	"time"
 )
 
 type CreateOrderRequest struct {
@@ -74,14 +75,12 @@ func (r *OrderItemReq) ToDomain(order domain.Order) *OrderItemReq {
 }
 
 type AddDishRequest struct {
-	OrderID  int `json:"order_id" binding:"required"`
 	DishID   int `json:"dish_id" binding:"required"`
 	Quantity int `json:"quantity" binding:"required,min=1"`
 }
 
 func (r *AddDishRequest) ToDomain(order domain.Order) *AddDishRequest {
 	return &AddDishRequest{
-		OrderID:  r.OrderID,
 		DishID:   r.DishID,
 		Quantity: r.Quantity,
 	}
@@ -160,10 +159,10 @@ type OrderResponse struct {
 	FinalAmount    float64         `json:"final_amount"`
 	PaymentMethod  string          `json:"payment_method"`
 	PaymentStatus  string          `json:"payment_status"`
-	Notes          string          `json:"notes"`
+	Notes          *string         `json:"notes"`
 	Items          []OrderItemResp `json:"items"`
-	CreatedAt      string          `json:"created_at"`
-	UpdatedAt      string          `json:"updated_at"`
+	CreatedAt      time.Time       `json:"created_at"`
+	UpdatedAt      time.Time       `json:"updated_at"`
 }
 
 func OrderResponseFromDomain(order domain.Order) *OrderResponse {

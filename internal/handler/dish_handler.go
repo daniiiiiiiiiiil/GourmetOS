@@ -211,7 +211,7 @@ func (h *DishHandler) UpdateDish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vars := mux.Vars(r)
-	dishId, err := strconv.Atoi(vars["dishId"])
+	dishId, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		sendError(w, http.StatusBadRequest, "ErrGetDishId", err.Error())
 		return
@@ -248,10 +248,10 @@ func (h *DishHandler) UpdateDish(w http.ResponseWriter, r *http.Request) {
 	if rep.Description != "" || len(rep.Description) != 0 {
 		updates["description"] = rep.Description
 	}
-	if rep.Calories != 0 {
+	if rep.Calories != nil {
 		updates["calories"] = rep.Calories
 	}
-	if rep.ImageURL != "" || len(rep.ImageURL) != 0 {
+	if rep.ImageURL != nil {
 		updates["image_url"] = rep.ImageURL
 	}
 	if rep.CookingTime != 0 {
@@ -275,7 +275,7 @@ func (h *DishHandler) DeleteDish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vars := mux.Vars(r)
-	dishId, err := strconv.Atoi(vars["dishId"])
+	dishId, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		sendError(w, http.StatusBadRequest, "ErrGetDishId", err.Error())
 		return
@@ -321,15 +321,28 @@ func (h *DishHandler) AddDecorator(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
+
 	vars := mux.Vars(r)
-	dishId, err := strconv.Atoi(vars["dishId"])
+	dishId, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		sendError(w, http.StatusBadRequest, "ErrGetDishId", err.Error())
 		return
 	}
-	decoratorType := vars["decoratorType"]
 
-	decor, err := h.service.AddDecorator(r.Context(), conn, dishId, decoratorType)
+	var req struct {
+		DecoratorType string `json:"decorator_type"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		sendError(w, http.StatusBadRequest, "InvalidRequest", "Неверный формат запроса")
+		return
+	}
+
+	if req.DecoratorType == "" {
+		sendError(w, http.StatusBadRequest, "ErrAddDecorator", "decorator_type не может быть пустым")
+		return
+	}
+
+	decor, err := h.service.AddDecorator(r.Context(), conn, dishId, req.DecoratorType)
 	if err != nil {
 		sendError(w, http.StatusInternalServerError, "ErrAddDecorator", err.Error())
 		return
@@ -344,7 +357,7 @@ func (h *DishHandler) RemoveDecorator(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vars := mux.Vars(r)
-	dishId, err := strconv.Atoi(vars["dishId"])
+	dishId, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		sendError(w, http.StatusBadRequest, "ErrGetDishId", err.Error())
 		return
@@ -392,10 +405,14 @@ func (h *DishHandler) SearchDishes(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	vars := mux.Vars(r)
-	query := vars["query"]
-	limit, _ := strconv.Atoi(vars["limit"])
-	offset, _ := strconv.Atoi(vars["offset"])
+	query := r.URL.Query().Get("query")
+	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
+
+	if query == "" {
+		sendError(w, http.StatusBadRequest, "ErrSearchDishes", "Поисковый запрос не может быть пустым")
+		return
+	}
 
 	search, total, err := h.service.SearchDishes(r.Context(), conn, query, limit, offset)
 	if err != nil {

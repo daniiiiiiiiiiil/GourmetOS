@@ -44,7 +44,7 @@ func (s *ReadyState) Cancel(order *Order) error {
 }
 
 func (s *ReadyState) GetName() string {
-	return "Готов"
+	return "ready"
 }
 
 // проверяет, можно ли перейти в другое состояние

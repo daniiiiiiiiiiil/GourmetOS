@@ -49,7 +49,7 @@ func (h *TableHandler) GetTable(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vars := mux.Vars(r)
-	tableID, err := strconv.Atoi(vars["table_id"])
+	tableID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -153,7 +153,7 @@ func (h *TableHandler) UpdateTable(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vars := mux.Vars(r)
-	tableID, err := strconv.Atoi(vars["table_id"])
+	tableID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -195,7 +195,7 @@ func (h *TableHandler) DeleteTable(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vars := mux.Vars(r)
-	tableID, err := strconv.Atoi(vars["table_id"])
+	tableID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -213,7 +213,7 @@ func (h *TableHandler) OccupyTable(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vars := mux.Vars(r)
-	tableID, err := strconv.Atoi(vars["table_id"])
+	tableID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -231,7 +231,7 @@ func (h *TableHandler) FreeTable(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vars := mux.Vars(r)
-	tableID, err := strconv.Atoi(vars["table_id"])
+	tableID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -249,7 +249,7 @@ func (h *TableHandler) ReserveTable(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vars := mux.Vars(r)
-	tableID, err := strconv.Atoi(vars["table_id"])
+	tableID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -267,7 +267,7 @@ func (h *TableHandler) CancelReservation(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	vars := mux.Vars(r)
-	tableID, err := strconv.Atoi(vars["table_id"])
+	tableID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

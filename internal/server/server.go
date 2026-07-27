@@ -125,8 +125,8 @@ func (server *HTTPServer) Start() error {
 	api.HandleFunc("/payments/calculate", server.paymentHandler.CalculateFinalAmount).Methods("POST")
 	api.HandleFunc("/payments/{id}/status", server.paymentHandler.GetPaymentStatus).Methods("GET")
 	api.HandleFunc("/payments/{id}/refund", server.paymentHandler.RefundPayment).Methods("POST")
-	api.HandleFunc("/payments/order/{orderId}", server.paymentHandler.GetPaymentByOrder).Methods("GET")
-	api.HandleFunc("/payments/transaction/{txnId}", server.paymentHandler.GetPaymentByTransaction).Methods("GET")
+	api.HandleFunc("/payments/order/{id}", server.paymentHandler.GetPaymentByOrder).Methods("GET")
+	api.HandleFunc("/payments/transaction/{id}", server.paymentHandler.GetPaymentByTransaction).Methods("GET")
 
 	api.HandleFunc("/kitchen/receive", server.kitchenHandler.ReceiveOrder).Methods("POST")
 	api.HandleFunc("/kitchen/cook/{id}", server.kitchenHandler.StartCooking).Methods("PUT")

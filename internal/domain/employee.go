@@ -13,10 +13,10 @@ type Employees struct {
 	Role       string    `json:"role"`
 	Shift      string    `json:"shift"`
 	HireDate   time.Time `json:"hire_date"`
-	Salary     string    `json:"salary"`
+	Salary     float64   `json:"salary"`
 	IsActive   bool      `json:"is_active"`
-	CreatedAt  string    `json:"created_at"`
-	UpdatedAt  string    `json:"updated_at"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 func NewEmployees(
@@ -27,10 +27,10 @@ func NewEmployees(
 	Role string,
 	Shift string,
 	HireDate time.Time,
-	Salary string,
+	Salary float64,
 	IsActive bool,
-	CreatedAt string,
-	UpdatedAt string) *Employees {
+	CreatedAt time.Time,
+	UpdatedAt time.Time) *Employees {
 	return &Employees{
 		EmployeeID: EmployeeID,
 		Name:       Name,

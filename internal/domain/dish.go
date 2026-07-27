@@ -17,8 +17,8 @@ type Dish struct {
 	IsVegetarian bool
 	IsVegan      bool
 	IsGlutenFree bool
-	Calories     int
-	ImageURL     string
+	Calories     *int
+	ImageURL     *string
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }
@@ -34,8 +34,8 @@ func NewDish(dishID int,
 	isVegetarian bool,
 	isVegan bool,
 	isGlutenFree bool,
-	calories int,
-	imageURL string,
+	calories *int,
+	imageURL *string,
 	createdAt time.Time,
 	updatedAt time.Time) *Dish {
 	return &Dish{

@@ -17,8 +17,8 @@ type CreateDishRequest struct {
 	IsVegetarian bool    `json:"is_vegetarian"`
 	IsVegan      bool    `json:"is_vegan"`
 	IsGlutenFree bool    `json:"is_gluten_free"`
-	Calories     int     `json:"calories"`
-	ImageURL     string  `json:"image_url"`
+	Calories     *int    `json:"calories"`
+	ImageURL     *string `json:"image_url"`
 }
 
 func (r *CreateDishRequest) Validate() error {
@@ -66,8 +66,8 @@ type UpdateDishRequest struct {
 	IsVegetarian bool    `json:"is_vegetarian"`
 	IsVegan      bool    `json:"is_vegan"`
 	IsGlutenFree bool    `json:"is_gluten_free"`
-	Calories     int     `json:"calories"`
-	ImageURL     string  `json:"image_url"`
+	Calories     *int    `json:"calories"`
+	ImageURL     *string `json:"image_url"`
 }
 
 func (r *UpdateDishRequest) Validate() error {
@@ -117,8 +117,8 @@ type DishResponse struct {
 	IsVegetarian bool       `json:"is_vegetarian"`
 	IsVegan      bool       `json:"is_vegan"`
 	IsGlutenFree bool       `json:"is_gluten_free"`
-	Calories     int        `json:"calories"`
-	ImageURL     string     `json:"image_url"`
+	Calories     *int       `json:"calories"`
+	ImageURL     *string    `json:"image_url"`
 	CreatedAt    time.Time  `json:"created_at"`
 	UpdatedAt    *time.Time `json:"updated_at"`
 }

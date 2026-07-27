@@ -4,6 +4,7 @@ import (
 	"GourmetOS/internal/patterns/state"
 	"errors"
 	"strings"
+	"time"
 )
 
 type Order struct {
@@ -17,10 +18,10 @@ type Order struct {
 	FinalAmount    float64
 	PaymentMethod  string
 	PaymentStatus  string
-	Notes          string
-	CreatedAt      string
-	UpdatedAt      string
-	State          state.OrderState
+	Notes          *string
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	State          state.OrderState `db:"-"`
 }
 
 func NewOrder(
@@ -34,9 +35,9 @@ func NewOrder(
 	FinalAmount float64,
 	PaymentMethod string,
 	PaymentStatus string,
-	Notes string,
-	CreatedAt string,
-	UpdatedAt string,
+	Notes *string,
+	CreatedAt time.Time,
+	UpdatedAt time.Time,
 ) *Order {
 	order := &Order{
 		OrderID:        OrderID,

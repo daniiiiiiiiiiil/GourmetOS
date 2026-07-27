@@ -45,21 +45,19 @@ func (r *OrderRepository) CreateOrder(ctx context.Context, conn *pgx.Conn, order
 }
 
 func (r *OrderRepository) GetByIdOrder(ctx context.Context, conn *pgx.Conn, orderID int) (*domain.Order, error) {
-	sqlQuery := `
-	SELECT *
-	FROM orders
-	WHERE order_id = $1
-`
+	sqlQuery := `SELECT * FROM orders WHERE order_id = $1`
 	rows, err := conn.Query(ctx, sqlQuery, orderID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	order, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[domain.Order])
+
+	created, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[domain.Order])
 	if err != nil {
 		return nil, err
 	}
-	return &order, nil
+
+	return &created, nil
 }
 
 func (r *OrderRepository) UpdateOrder(ctx context.Context, conn *pgx.Conn, order domain.Order, id int) (*domain.Order, error) {

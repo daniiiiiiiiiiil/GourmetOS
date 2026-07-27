@@ -274,10 +274,10 @@ func (s *DishService) UpdateDishService(ctx context.Context, conn *pgx.Conn, id 
 		existingDish.IsGlutenFree = isGlutenFree
 	}
 	if calories, ok := dish["calories"].(int); ok {
-		existingDish.Calories = calories
+		existingDish.Calories = &calories
 	}
 	if imageURL, ok := dish["image_url"].(string); ok {
-		existingDish.ImageURL = imageURL
+		existingDish.ImageURL = &imageURL
 	}
 
 	if err := existingDish.Validate(); err != nil {
@@ -333,7 +333,7 @@ func (s *DishService) AddDecorator(ctx context.Context, conn *pgx.Conn, id int, 
 	dish, err := s.dishService.GetByIDDish(ctx, conn, id)
 	if err != nil {
 		return nil, errors.NotFoundError{
-			Entity: "dish",
+			Entity: "Dish",
 			ID:     id,
 		}
 	}
@@ -347,7 +347,10 @@ func (s *DishService) AddDecorator(ctx context.Context, conn *pgx.Conn, id int, 
 		baseDish = decorator.NewPasta(dish.Name)
 	case "salad":
 		baseDish = decorator.NewSalad(dish.Name)
+	default:
+		baseDish = decorator.NewPizza("средняя")
 	}
+
 	var decoratedDish decorator.Dish
 
 	switch decoratorType {
@@ -359,7 +362,20 @@ func (s *DishService) AddDecorator(ctx context.Context, conn *pgx.Conn, id int, 
 		decoratedDish = decorator.NewExtraSauceDecorator(baseDish)
 	case "gluten_free":
 		decoratedDish = decorator.NewGlutenFreeDecorator(baseDish)
+	default:
+		return nil, errors.ValidationError{
+			Field:   "decorator_type",
+			Message: fmt.Sprintf("Неизвестный тип декоратора: %s", decoratorType),
+		}
 	}
+
+	if decoratedDish == nil {
+		return nil, errors.BusinessError{
+			Code:    "ErrDecoratorNotFound",
+			Message: "Декоратор не найден",
+		}
+	}
+
 	newDescription := decoratedDish.GetDescription()
 	newPrice := decoratedDish.GetPrice()
 

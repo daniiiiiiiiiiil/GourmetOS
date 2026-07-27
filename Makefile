@@ -1,3 +1,6 @@
+include .env
+export
+
 .PHONY: run build test clean migrate
 
 BINARY_NAME=gourmetos
@@ -31,7 +34,7 @@ watch:
 	air
 
 migrate-up:
-	migrate -path migrations -database ${DATABASE_URL} up
+	migrate -path pkg/database/migrations -database ${DATABASE_URL} up
 
 migrate-down:
-	migrate -path migrations -database ${DATABASE_URL} down
+	migrate -path pkg/database/migrations -database ${DATABASE_URL} down

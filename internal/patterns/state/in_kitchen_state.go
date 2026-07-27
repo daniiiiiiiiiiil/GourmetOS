@@ -43,7 +43,7 @@ func (s *InKitchenState) Cancel(order *Order) error {
 }
 
 func (s *InKitchenState) GetName() string {
-	return "На кухне"
+	return "in_kitchen"
 }
 
 // проверяет, можно ли перейти в другое состояние

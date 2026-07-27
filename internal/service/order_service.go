@@ -65,7 +65,7 @@ func (s *OrderService) CreateOrder(
 		zap.Int("waiter_id", waiterID),
 		zap.Ints("dish_ids", dishIDs),
 	)
-
+	orderManager := command.NewOrderManager()
 	table, err := s.tableRepo.GetByIDTable(ctx, conn, tableID)
 	if err != nil {
 		s.logger.Error("failed to get table", zap.Int("table_id", tableID), zap.Error(err))
@@ -142,7 +142,7 @@ func (s *OrderService) CreateOrder(
 		DiscountAmount: 0,
 		FinalAmount:    totalAmount,
 		PaymentStatus:  "pending",
-		Notes:          "",
+		Notes:          nil,
 	}
 
 	createdOrder, err := s.orderRepo.CreateOrder(ctx, conn, *newOrder)
@@ -159,7 +159,6 @@ func (s *OrderService) CreateOrder(
 
 	if err := s.tableRepo.UpdateOccupiedTable(ctx, conn, tableID, true); err != nil {
 		s.logger.Error("failed to occupy table", zap.Int("table_id", tableID), zap.Error(err))
-		// Не блокируем создание заказа, но логируем ошибку
 	}
 
 	event := observer.NewEvent(
@@ -170,7 +169,7 @@ func (s *OrderService) CreateOrder(
 	)
 	s.subject.NotifyObservers(event)
 
-	createCmd := command.NewCreateOrderCommand(nil, tableID)
+	createCmd := command.NewCreateOrderCommand(orderManager, tableID)
 	if err := s.invoker.Execute(createCmd); err != nil {
 		s.logger.Warn("failed to save command to history", zap.Error(err))
 	}
@@ -251,7 +250,7 @@ func (s *OrderService) AddDishService(ctx context.Context, conn *pgx.Conn, order
 			Message: "Не удалось обновить сумму" + err.Error(),
 		}
 	}
-	cmd := command.NewAddDishCommand(nil, orderID, dish.Name, dish.Price)
+	cmd := command.NewAddDishCommand(orderID, dish.Name, dish.Price)
 	if err := s.invoker.Execute(cmd); err != nil {
 		s.logger.Warn("failed to save command to history", zap.Error(err))
 	}

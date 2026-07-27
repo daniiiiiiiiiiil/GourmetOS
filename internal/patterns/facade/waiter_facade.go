@@ -63,7 +63,7 @@ func (w *WaiterFacade) CreateOrder(tableID int) (int, error) {
 func (w *WaiterFacade) AddDishToOrder(orderID int, dishName string, price float64) error {
 	fmt.Printf("Официант: добавляю блюдо '%s' в заказ #%d\n", dishName, orderID)
 
-	cmd := command.NewAddDishCommand(w.manager, orderID, dishName, price)
+	cmd := command.NewAddDishCommand(orderID, dishName, price)
 	err := w.invoker.Execute(cmd)
 	if err != nil {
 		return fmt.Errorf("не удалось добавить блюдо: %w", err)
@@ -119,10 +119,10 @@ func (w *WaiterFacade) CompleteOrder(orderID int) error {
 }
 
 // официант отменяет заказ
-func (w *WaiterFacade) CancelOrder(orderID int) error {
+func (w *WaiterFacade) CancelOrder(orderID, tableID int) error {
 	fmt.Printf("Официант: отменяю заказ #%d\n", orderID)
 
-	cmd := command.NewCancelOrderCommand(w.manager, orderID)
+	cmd := command.NewCancelOrderCommand(orderID, tableID)
 	err := w.invoker.Execute(cmd)
 	if err != nil {
 		return fmt.Errorf("не удалось отменить заказ: %w", err)
